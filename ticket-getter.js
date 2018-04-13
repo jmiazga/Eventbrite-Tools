@@ -8,7 +8,8 @@
 var OPTIONS = {
 	startTime: "2017-05-19T15:59:55", // When should this script start checking for tickets (e.g. 5 seconds before official release time)
 	ticketIndex: 0, // There may be several ticket types in the list - set to 0 to select the first one
-	ticketQuantity: 1 // How many tickets you want to buy? - WARNING: Often limited by the event organizer to 1
+	ticketQuantity: 1, // How many tickets you want to buy? - WARNING: Often limited by the event organizer to 1
+  	forTableStyleEvent: false // Swap between normal or table style event page. Addresses this issue: https://github.com/Dalimil/Eventbrite-Tools/issues/3#issuecomment-256580440
 };
 
 function checkLocation() {
@@ -47,7 +48,12 @@ function findAll(needle, haystack) {
 }
 
 function getTicket(data) {
-	const ticketMatches = findAll("ticket_form_element_name\":\"([^\"]+)\"", data);
+	let ticketMatches;
+	if (OPTIONS.forTableStyleEvent) {
+	  ticketMatches = findAll("id=\"(quant_[a-zA-Z0-9_]*)", data);
+	} else {
+	  ticketMatches = findAll("ticket_form_element_name\":\"([^\"]+)\"", data);
+	}
 	// console.log(ticketMatches);
 	return ticketMatches[OPTIONS.ticketIndex][1];
 }
